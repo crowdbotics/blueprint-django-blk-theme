@@ -1,0 +1,3 @@
+[submodule "blueprint-lib"]
+	path = blueprint-lib
+	url = https://github.com/crowdbotics/blueprint-lib
