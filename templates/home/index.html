@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load staticfiles bootstrap4 %}
+
+{% block body_class %}landing-page{% endblock body_class %}
+
+{% block content %}
+<div class="page-header">
+    <img src="{% static 'vendor/blk/img/blob.png' %}" class="path">
+    <img src="{% static 'vendor/blk/img/path2.png' %}" class="path2">
+    <img src="{% static 'vendor/blk/img/triunghiuri.png' %}" class="shapes triangle">
+    <img src="{% static 'vendor/blk/img/waves.png' %}" class="shapes wave">
+    <img src="{% static 'vendor/blk/img/patrat.png' %}" class="shapes squares">
+    <img src="{% static 'vendor/blk/img/cercuri.png' %}" class="shapes circle">
+
+    <div class="content-center">
+        {{ homepage.body|safe }}
+    </div>
+</div>
+{% endblock %}

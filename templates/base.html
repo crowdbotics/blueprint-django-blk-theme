@@ -1,0 +1,143 @@
+{% load staticfiles %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+        <!-- Fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet">
+
+        <!-- Icons -->
+        <link href="{% static 'vendor/blk/css/nucleo-icons.css' %}" rel="stylesheet">
+        <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+
+        <!-- Theme CSS -->
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
+        <link type="text/css" href="{% static 'vendor/blk/css/blk-design-system.min.css' %}" rel="stylesheet">
+
+        <!-- <link rel="stylesheet" href={% static 'css/main.css' %} >-->
+        <title>{{ customtext.title|striptags }}</title>
+    </head>
+    <body>
+        <div>
+            {% block header_nav %}
+                <nav class="navbar navbar-expand-lg fixed-top navbar-transparent" color-on-scroll="100">
+                    <div class="container">
+                        <div class="navbar-translate">
+                            <a class="navbar-brand editable" data-remote="{{ customtext.api }}" data-field="{{ customtext.field }}" href="/">
+                                <span>{{ customtext.title|safe }}</span>
+                            </a>
+                        </div>
+                        <div class="collapse navbar-collapse justify-content-end" id="navigation">
+                            <ul class="navbar-nav">
+                                {% if not user.is_authenticated %}
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{% url 'account_login' %}">
+                                            Login
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{% url 'account_signup' %}">
+                                            Signup
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{% url 'account_logout' %}">
+                                            Logout
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    {% if user.is_superuser %}
+                        <button class="btn btn-success" id="editor" title="Change to inline editor">Edit</button>
+                    {% endif %}
+                </nav>
+            {% endblock header_nav %}
+
+            <body class="{% block body_class %}{% endblock body_class %}">
+                <div class="wrapper">
+                    {% block content %}{% endblock content %}
+                </div>
+
+                {% block footer %}
+                    <footer class="footer">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <h1 class="title">{{ customtext.title|safe }}</h1>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                {% endblock footer %}
+            </div>
+        </div>
+    <!-- Optional JavaScript -->
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="{% static 'vendor/blk/js/core/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/blk/js/core/popper.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script src="{% static 'vendor/blk/js/core/bootstrap.min.js' %}"></script>
+    <script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <!-- Theme JS -->
+    <script src="{% static 'vendor/blk/js/blk-design-system.min.js' %}"></script>
+
+    <script>
+        $('#editor').on('click', function (e) {
+            if (e.target.innerText === 'Edit'){
+                e.target.innerText = 'Cancel';
+                var editor = new MediumEditor('.editable');
+                editor.subscribe('editableBlur', function (event, editable) {
+                    var url = editable.dataset.remote;
+                    var field = editable.dataset.field;
+                    var data = {};
+                    data[field] = editable.innerHTML;
+                    api_call(url, data);
+                });
+            } else {
+                e.target.innerText = 'Edit';
+                window._mediumEditors.forEach(function (editor) {
+                    if (editor)
+                        editor.destroy();
+                })
+            }
+        });
+
+        function api_call(url, data, method='PATCH'){
+            $.ajax({
+                type: method,
+                url: url,
+                data: data,
+                dataType: 'json',
+                headers: {
+                    'X-CSRFToken': $.cookie('csrftoken')
+                },
+                success: function (response) {
+                    toastr.success('Update Successful')
+                },
+                error: function (response) {
+                    toastr.error('Update Unsuccessful')
+                }
+            });
+        }
+        toastr.options = {
+          "positionClass": "toast-bottom-right",
+          "fadeIn": 300,
+          "fadeOut": 800,
+          "timeOut": 2000,
+          "extendedTimeOut": 1000
+        };
+    </script>
+  </body>
+</html>
