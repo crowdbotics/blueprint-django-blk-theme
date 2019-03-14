@@ -21,4 +21,4 @@ mkdir -p $BASE_PATH/static/vendor/blk/
 cp -R blk/ $BASE_PATH/static/vendor/blk/
 
 # Copy base, landing and authentication templates
-cp -R templates/ $BASE_PATH/$APP_NAME/templates
+cp -R templates/ $BASE_PATH/home/templates
